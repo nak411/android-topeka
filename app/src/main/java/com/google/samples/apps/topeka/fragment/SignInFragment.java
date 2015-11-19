@@ -17,15 +17,18 @@
 package com.google.samples.apps.topeka.fragment;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.google.samples.apps.topeka.R;
 import com.google.samples.apps.topeka.activity.CategorySelectionActivity;
@@ -93,7 +97,9 @@ public class SignInFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(KEY_SELECTED_AVATAR_INDEX, mSelectedAvatar.ordinal());
+        if (mSelectedAvatar != null) {
+            outState.putInt(KEY_SELECTED_AVATAR_INDEX, mSelectedAvatar.ordinal());
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -158,18 +164,20 @@ public class SignInFragment extends Fragment {
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.done:
-                        savePlayer(getActivity());
-                        removeDoneFab(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (null == mSelectedAvatarView) {
-                                    performSignInWithTransition(mAvatarGrid.getChildAt(
-                                            mSelectedAvatar.ordinal()));
-                                } else {
-                                    performSignInWithTransition(mSelectedAvatarView);
+                        if (validSelections()) {
+                            savePlayer(getActivity());
+                            removeDoneFab(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (null == mSelectedAvatarView) {
+                                        performSignInWithTransition(mAvatarGrid.getChildAt(
+                                                mSelectedAvatar.ordinal()));
+                                    } else {
+                                        performSignInWithTransition(mSelectedAvatarView);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                         break;
                     default:
                         throw new UnsupportedOperationException(
@@ -178,6 +186,33 @@ public class SignInFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private boolean validSelections() {
+        String message = null;
+        if (TextUtils.isEmpty(mFirstName.getText().toString())) {
+            message = getString(R.string.msg_required_first_name);
+        } else if (TextUtils.isEmpty(mLastInitial.getText().toString())) {
+            message = getString(R.string.msg_required_last_name);
+        } else if (mSelectedAvatar == null) {
+            message = getString(R.string.msg_select_avatar);
+        }
+
+        //Prompt user to add required information
+        if (!TextUtils.isEmpty(message)) {
+            showSnackbar(message);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar snackbar = Snackbar.make(mDoneFab, message, Snackbar.LENGTH_SHORT);
+        View snackbarView = snackbar.getView();
+        TextView textView = (TextView)snackbarView .findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);//change Snackbar's text color;
+        snackbar.show();
     }
 
     private void removeDoneFab(@Nullable Runnable endAction) {

@@ -29,4 +29,7 @@
     <string name="sign_out">Sign out</string>
     <string name="x_points">%1$d pts</string>
     <string name="back">back</string>
+    <string name="msg_required_first_name">Enter first name</string>
+    <string name="msg_required_last_name">Enter last name</string>
+    <string name="msg_select_avatar">Select avatar</string>
 </resources>

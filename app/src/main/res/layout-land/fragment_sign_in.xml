@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:id="@+id/fragment_sign_in_content"
              android:layout_width="match_parent"
@@ -57,8 +57,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
         </LinearLayout>
-        <include
-                layout="@layout/fab_done"
-                android:visibility="gone" />
+
     </FrameLayout>
-</FrameLayout>
+    <include
+        layout="@layout/fab_done"
+        android:visibility="gone" />
+</android.support.design.widget.CoordinatorLayout>
